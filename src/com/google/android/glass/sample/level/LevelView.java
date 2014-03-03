@@ -16,11 +16,19 @@
 
 package com.google.android.glass.sample.level;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -28,10 +36,15 @@ import android.view.View;
  */
 public class LevelView extends View {
 
-    private Paint mPaint = new Paint();
+	private Paint mPaint = new Paint();
     private Paint mTextPaint = new Paint();
     private float mAngle = 0.f;
 	private float mYaw = 0.f;
+	private float mYawCorrected = 0.f; // offset yaw
+	private float mStartYaw = 0.f;
+	private boolean mHasStartYaw = false; // used to set start yaw the first time it gets it
+	private LevelSocketClient mSocketClient;
+	
 	private float mPitch = 0.f;
 	private float mRoll = 0.f;
 
@@ -47,7 +60,10 @@ public class LevelView extends View {
         super(context, attrs, style);
         
         // Keep screen on
-        setKeepScreenOn(true);
+        setKeepScreenOn(true); // Doesn't really work 
+        
+        mSocketClient = new LevelSocketClient();
+        mSocketClient.execute("Test Glass Message!");
 
         mPaint.setColor(Color.BLUE);
         mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
@@ -89,10 +105,21 @@ public class LevelView extends View {
         canvas.drawText("Yaw: " + mYaw, 5, 30,  mTextPaint);
         canvas.drawText("Pitch: " + mPitch, 5, 60,  mTextPaint);
         canvas.drawText("Roll: " + mRoll, 5, 90,  mTextPaint);
+        canvas.drawText("YawCorrected: " + mYawCorrected, 5, 120,  mTextPaint);
+        canvas.drawText("YawOffset: " + mStartYaw, 5, 150,  mTextPaint);
     }
 
 	public void setYawPitchRoll(float mYaw, float mPitch, float mRoll) {
+		if (!mHasStartYaw) {
+			mHasStartYaw = true;
+			mStartYaw = mYaw;
+		}
 		this.mYaw = mYaw;
+		if (mYaw - mStartYaw < 0) {
+			this.mYawCorrected  = 360 + mYaw - mStartYaw;
+		} else {
+			this.mYawCorrected  = mYaw - mStartYaw;
+		}
 		this.mPitch = mPitch;
 		this.mRoll = mRoll;
 	}
