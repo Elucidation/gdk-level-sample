@@ -76,7 +76,8 @@ public class LevelRenderer implements DirectRenderingCallback {
                 float mPitch = (float) Math.toDegrees(mOrientation[1]);
                 float mRoll= (float) Math.toDegrees(mOrientation[2]);
                 
-                Log.v("SAM_DEBUG", "yaw : " + mYaw + ", pitch : " + mPitch + ", roll : " + mRoll);
+//                Log.v("SAM_DEBUG", "yaw : " + mYaw + ", pitch : " + mPitch + ", roll : " + mRoll);
+                mLevelView.setYawPitchRoll(mYaw, mPitch, mRoll);
             }
         }
 

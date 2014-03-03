@@ -14,4 +14,4 @@
      limitations under the License.
 -->
 
-<trigger keyword="@string/show_demo_voice_trigger"/>
+<trigger keyword="@string/pan_tilt_voice_trigger"/>

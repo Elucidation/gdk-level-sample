@@ -29,7 +29,11 @@ import android.view.View;
 public class LevelView extends View {
 
     private Paint mPaint = new Paint();
+    private Paint mTextPaint = new Paint();
     private float mAngle = 0.f;
+	private float mYaw = 0.f;
+	private float mPitch = 0.f;
+	private float mRoll = 0.f;
 
     public LevelView(Context context) {
         this(context, null, 0);
@@ -41,10 +45,17 @@ public class LevelView extends View {
 
     public LevelView(Context context, AttributeSet attrs, int style) {
         super(context, attrs, style);
+        
+        // Keep screen on
+        setKeepScreenOn(true);
 
         mPaint.setColor(Color.BLUE);
         mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStrokeWidth(5);
+        
+        mTextPaint.setColor(Color.GREEN);
+        mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setTextSize(30);
     }
 
     /**
@@ -73,6 +84,17 @@ public class LevelView extends View {
 
         // Draw the level line.
         canvas.drawLine(0, y + height, width, -y + height, mPaint);
+        
+        // Draw yaw/pitch/roll
+        canvas.drawText("Yaw: " + mYaw, 5, 30,  mTextPaint);
+        canvas.drawText("Pitch: " + mPitch, 5, 60,  mTextPaint);
+        canvas.drawText("Roll: " + mRoll, 5, 90,  mTextPaint);
     }
+
+	public void setYawPitchRoll(float mYaw, float mPitch, float mRoll) {
+		this.mYaw = mYaw;
+		this.mPitch = mPitch;
+		this.mRoll = mRoll;
+	}
 
 }
