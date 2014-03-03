@@ -53,6 +53,9 @@ public class LevelRenderer implements DirectRenderingCallback {
     private final FrameLayout mLayout;
     private final LevelView mLevelView;
 
+	protected float[] mRotationMatrix = new float[16];
+	protected float[] mOrientation = new float[9];
+
     private final SensorEventListener mSensorEventListener = new SensorEventListener() {
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -63,6 +66,17 @@ public class LevelRenderer implements DirectRenderingCallback {
         public void onSensorChanged(SensorEvent event) {
             if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
                 computeOrientation(event);
+            } else if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            	SensorManager.getRotationMatrixFromVector(mRotationMatrix, event.values);
+                SensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_X,
+                        SensorManager.AXIS_Z, mRotationMatrix);
+                SensorManager.getOrientation(mRotationMatrix, mOrientation);
+
+                float mYaw = (float) Math.toDegrees(mOrientation[0]);
+                float mPitch = (float) Math.toDegrees(mOrientation[1]);
+                float mRoll= (float) Math.toDegrees(mOrientation[2]);
+                
+                Log.v("SAM_DEBUG", "yaw : " + mYaw + ", pitch : " + mPitch + ", roll : " + mRoll);
             }
         }
 
@@ -126,6 +140,9 @@ public class LevelRenderer implements DirectRenderingCallback {
             if (shouldRender) {
                 mSensorManager.registerListener(mSensorEventListener,
                         mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
+                        SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.registerListener(mSensorEventListener,
+                        mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
                         SensorManager.SENSOR_DELAY_NORMAL);
 
                 mRenderThread = new RenderThread();
