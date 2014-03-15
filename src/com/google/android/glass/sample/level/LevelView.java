@@ -43,7 +43,6 @@ public class LevelView extends View {
 	private float mYawCorrected = 0.f; // offset yaw
 	private float mStartYaw = 0.f;
 	private boolean mHasStartYaw = false; // used to set start yaw the first time it gets it
-	private LevelSocketClient mSocketClient;
 	
 	private float mPitch = 0.f;
 	private float mRoll = 0.f;
@@ -61,9 +60,6 @@ public class LevelView extends View {
         
         // Keep screen on
         setKeepScreenOn(true); // Doesn't really work 
-        
-        mSocketClient = new LevelSocketClient();
-        mSocketClient.execute("Test Glass Message!");
 
         mPaint.setColor(Color.BLUE);
         mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
@@ -102,11 +98,11 @@ public class LevelView extends View {
         canvas.drawLine(0, y + height, width, -y + height, mPaint);
         
         // Draw yaw/pitch/roll
-        canvas.drawText("Yaw: " + mYaw, 5, 30,  mTextPaint);
-        canvas.drawText("Pitch: " + mPitch, 5, 60,  mTextPaint);
-        canvas.drawText("Roll: " + mRoll, 5, 90,  mTextPaint);
-        canvas.drawText("YawCorrected: " + mYawCorrected, 5, 120,  mTextPaint);
-        canvas.drawText("YawOffset: " + mStartYaw, 5, 150,  mTextPaint);
+        canvas.drawText(String.format("Yaw: %+3.1f", mYaw), 5, 30,  mTextPaint);
+        canvas.drawText(String.format("Pitch: %+3.1f", mPitch), 5, 60,  mTextPaint);
+        canvas.drawText(String.format("Roll: %+3.1f", mRoll), 5, 90,  mTextPaint);
+        canvas.drawText(String.format("YawCorrected: %+3.1f", mYawCorrected), 5, 120,  mTextPaint);
+        canvas.drawText(String.format("YawOffset: %+3.1f", mStartYaw), 5, 150,  mTextPaint);
     }
 
 	public void setYawPitchRoll(float mYaw, float mPitch, float mRoll) {

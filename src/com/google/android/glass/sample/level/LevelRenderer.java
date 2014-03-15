@@ -55,9 +55,12 @@ public class LevelRenderer implements DirectRenderingCallback {
 
 	protected float[] mRotationMatrix = new float[16];
 	protected float[] mOrientation = new float[9];
+	
+	public LevelSocketClient mSocketClient;
 
     private final SensorEventListener mSensorEventListener = new SensorEventListener() {
-        @Override
+
+		@Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
             // Nothing to do here.
         }
@@ -78,6 +81,11 @@ public class LevelRenderer implements DirectRenderingCallback {
                 
 //                Log.v("SAM_DEBUG", "yaw : " + mYaw + ", pitch : " + mPitch + ", roll : " + mRoll);
                 mLevelView.setYawPitchRoll(mYaw, mPitch, mRoll);
+                
+                // Send data over socket
+            	if (!mSocketClient.sendData(mYaw, mPitch, mRoll)) {
+            		Log.w("SAM_DEBUG", "socket closed, can't send message...");
+            	}
             }
         }
 
@@ -103,6 +111,12 @@ public class LevelRenderer implements DirectRenderingCallback {
         mLayout = (FrameLayout) inflater.inflate(R.layout.level_live_card, null);
         mLevelView = (LevelView) mLayout.findViewById(R.id.level);
         mSensorManager = sensorManager;
+        
+        Log.v("SAM_DEBUG", "Starting socket client.");
+        // Start socket client and leave it running in background
+        mSocketClient = new LevelSocketClient();
+        mSocketClient.execute();
+//        mSocketClient.cancel(true);
     }
 
     @Override
