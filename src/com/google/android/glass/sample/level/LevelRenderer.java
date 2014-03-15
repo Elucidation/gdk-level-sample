@@ -56,7 +56,7 @@ public class LevelRenderer implements DirectRenderingCallback {
 	protected float[] mRotationMatrix = new float[16];
 	protected float[] mOrientation = new float[9];
 	
-	public LevelSocketClient mSocketClient;
+	
 
     private final SensorEventListener mSensorEventListener = new SensorEventListener() {
 
@@ -76,16 +76,13 @@ public class LevelRenderer implements DirectRenderingCallback {
                 SensorManager.getOrientation(mRotationMatrix, mOrientation);
 
                 float mYaw = (float) Math.toDegrees(mOrientation[0]);
-                float mPitch = (float) Math.toDegrees(mOrientation[1]);
+                float mPitch = -(float) Math.toDegrees(mOrientation[1]); // Inverted so + is up
                 float mRoll= (float) Math.toDegrees(mOrientation[2]);
                 
 //                Log.v("SAM_DEBUG", "yaw : " + mYaw + ", pitch : " + mPitch + ", roll : " + mRoll);
                 mLevelView.setYawPitchRoll(mYaw, mPitch, mRoll);
                 
                 // Send data over socket
-            	if (!mSocketClient.sendData(mYaw, mPitch, mRoll)) {
-            		Log.w("SAM_DEBUG", "socket closed, can't send message...");
-            	}
             }
         }
 
@@ -112,11 +109,6 @@ public class LevelRenderer implements DirectRenderingCallback {
         mLevelView = (LevelView) mLayout.findViewById(R.id.level);
         mSensorManager = sensorManager;
         
-        Log.v("SAM_DEBUG", "Starting socket client.");
-        // Start socket client and leave it running in background
-        mSocketClient = new LevelSocketClient();
-        mSocketClient.execute();
-//        mSocketClient.cancel(true);
     }
 
     @Override
@@ -124,24 +116,30 @@ public class LevelRenderer implements DirectRenderingCallback {
         mSurfaceWidth = width;
         mSurfaceHeight = height;
         doLayout();
+        Log.i("SAM_DEBUG", "Surface Changed");
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mHolder = holder;
         updateRenderingState();
+        mLevelView.startROSSocket();
+        Log.i("SAM_DEBUG", "Surface Created - Started ROS Socket");
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         mHolder = null;
         updateRenderingState();
+        mLevelView.closeROSSocket();
+        Log.i("SAM_DEBUG", "Surface Destroyed - Closed ROS Socket");
     }
 
     @Override
     public void renderingPaused(SurfaceHolder surfaceHolder, boolean paused) {
         mRenderingPaused = paused;
         updateRenderingState();
+        Log.i("SAM_DEBUG", String.format("Paused: %s",paused ? "Yes" : "No"));
     }
 
     /**

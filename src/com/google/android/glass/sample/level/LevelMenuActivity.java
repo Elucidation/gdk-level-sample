@@ -19,6 +19,7 @@ package com.google.android.glass.sample.level;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -65,6 +66,9 @@ public class LevelMenuActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.stop:
                 stopService(new Intent(this, LevelService.class));
+                return true;
+            case R.id.rezero:
+                Log.i("SAM_DEBUG", "RE_ZERO Hit");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

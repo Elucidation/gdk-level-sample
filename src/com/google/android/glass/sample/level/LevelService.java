@@ -80,9 +80,6 @@ public class LevelService extends Service {
             mLiveCard.getSurfaceHolder().removeCallback(mRenderer);
             mLiveCard = null;
         }
-        if (mRenderer !=null && mRenderer.mSocketClient != null) {
-        	mRenderer.mSocketClient.cancel(true);
-        }
         
         super.onDestroy();
     }
